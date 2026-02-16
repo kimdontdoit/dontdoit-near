@@ -1,31 +1,47 @@
-import styles from '@/styles/app.module.css';
-import NearLogo from '@/assets/near-logo.svg';
-import NextLogo from '@/assets/react.svg';
-import { Cards } from '@/components/cards';
+import { useNearWallet } from "near-connect-hooks";
+import { Navigate } from "react-router";
+import { Button } from "@/components/ui/button";
+import NearLogo from "@/assets/near-logo.svg";
 
 const Home = () => {
+  const { signedAccountId, loading, signIn } = useNearWallet();
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[80vh]">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-foreground" />
+      </div>
+    );
+  }
+
+  if (signedAccountId) {
+    return <Navigate to="/profile" replace />;
+  }
+
   return (
-
-    <main className={styles.main}>
-    <div className={styles.description}> </div>
-
-    <div className={styles.center}>
-      <img className={styles.logo} src={NearLogo} alt="NEAR Logo" width={110 * 1.5} height={28 * 1.5} />
-      <h3 className="ms-2 me-3 text-dark"> + </h3>
-      <img
-          className={styles.reactLogo}
-          src={NextLogo}
-          alt="React Logo"
-          width={300 * 0.58}
-          height={61 * 0.58}
+    <main className="flex flex-col items-center justify-center min-h-[80vh] gap-8 px-4">
+      <div className="flex flex-col items-center gap-6 text-center max-w-md">
+        <img
+          src={NearLogo}
+          alt="NEAR Protocol"
+          className="w-32 h-auto dark:invert"
         />
-    </div>
+        <h1 className="text-3xl font-bold tracking-tight">
+          Don't Do It — NEAR
+        </h1>
+        <p className="text-muted-foreground text-lg">
+          Create your on-chain profile page. Connect your NEAR wallet to get started.
+        </p>
+        <Button
+          size="lg"
+          className="rounded-full px-8 h-12 text-base font-medium"
+          onClick={() => signIn()}
+        >
+          Connect NEAR Wallet
+        </Button>
+      </div>
+    </main>
+  );
+};
 
-    <div className={styles.grid}>
-      <Cards />
-    </div>
-  </main>
-  )
-}
-
-export default Home
+export default Home;
