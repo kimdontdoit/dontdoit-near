@@ -1,3 +1,6 @@
+import { useRef, useState } from "react";
+import { useNearWallet } from "near-connect-hooks";
+import { toast } from "sonner";
 import { ImageBlock } from "@/features/profiles/types/profile-content";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,7 +20,8 @@ import {
   SelectTrigger,
   SelectValue
 } from "@/components/ui/select";
-import { X } from "lucide-react";
+import { Upload, X } from "lucide-react";
+import { uploadImage, validateImageFile } from "@/lib/upload";
 
 interface ImageBlockEditorProps {
   block: ImageBlock;
@@ -30,6 +34,33 @@ export const ImageBlockEditor = ({
   onChange,
   onClose
 }: ImageBlockEditorProps) => {
+  const { signedAccountId } = useNearWallet();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isUploading, setIsUploading] = useState(false);
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !signedAccountId) return;
+
+    const err = validateImageFile(file);
+    if (err) {
+      toast.error(err);
+      return;
+    }
+
+    setIsUploading(true);
+    try {
+      const url = await uploadImage(file, signedAccountId, "block");
+      onChange({ ...block, type: "image", content: { ...block.content, url } });
+      toast.success("Image uploaded");
+    } catch (uploadErr: any) {
+      toast.error(uploadErr.message || "Upload failed");
+    } finally {
+      setIsUploading(false);
+      e.target.value = "";
+    }
+  };
+
   return (
     <Card className="h-full w-full flex flex-col border-0 rounded-none shadow-none animate-in slide-in-from-right duration-200">
       <CardHeader className="flex flex-row items-center justify-between p-4 border-b space-y-0">
@@ -43,19 +74,41 @@ export const ImageBlockEditor = ({
         <CardContent className="p-4 space-y-4">
           <div className="space-y-2">
             <Label htmlFor="image-url">Image URL</Label>
-            <Input
-              id="image-url"
-              value={block.content.url}
-              onChange={(e) =>
-                onChange({
-                  ...block,
-                  type: "image",
-                  content: { ...block.content, url: e.target.value }
-                })
-              }
-              placeholder="https://example.com/image.png"
-              className="text-xs font-mono"
+            <div className="flex gap-2">
+              <Input
+                id="image-url"
+                value={block.content.url}
+                onChange={(e) =>
+                  onChange({
+                    ...block,
+                    type: "image",
+                    content: { ...block.content, url: e.target.value }
+                  })
+                }
+                placeholder="https://example.com/image.png"
+                className="text-xs font-mono"
+              />
+              <Button
+                type="button"
+                variant="outline"
+                size="icon"
+                disabled={isUploading || !signedAccountId}
+                onClick={() => fileInputRef.current?.click()}
+                title="Upload image"
+              >
+                <Upload className="w-4 h-4" />
+              </Button>
+            </div>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/jpeg,image/png,image/webp,image/gif"
+              className="hidden"
+              onChange={handleFileChange}
             />
+            {isUploading && (
+              <p className="text-xs text-muted-foreground">Uploading...</p>
+            )}
           </div>
 
           <div className="space-y-2">

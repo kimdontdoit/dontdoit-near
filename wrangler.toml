@@ -1,0 +1,14 @@
+name = "dontdoit-near"
+compatibility_date = "2024-04-05"
+pages_build_output_dir = "dist"
+
+compatibility_flags = ["nodejs_compat"]
+
+[vars]
+VITE_SUPABASE_URL = "https://mrpoaepqrocwsxqbelcz.supabase.co"
+VITE_SUPABASE_PUBLISHABLE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1ycG9hZXBxcm9jd3N4cWJlbGN6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTcwMzc2MDcsImV4cCI6MjA3MjYxMzYwN30.mzqZwqHtotM-fMFwt49eqWczKrVgrKSYTusYRe7Qdfo"
+
+[[r2_buckets]]
+binding = "R2_UPLOADS"
+bucket_name = "dontdoit-again-uploads"
+preview_bucket_name = "dontdoit-again-uploads-preview"

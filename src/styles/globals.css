@@ -2,60 +2,231 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ─── Local fonts ─────────────────────────────────────────────────────────── */
+
+@font-face {
+  font-family: "Mona Sans";
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url("/assets/fonts/MonaSans/Mona-Sans-Variable.woff2")
+    format("woff2-variations");
+}
+
+@font-face {
+  font-family: "Geist";
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url("/assets/fonts/Geist/Geist.woff2") format("woff2-variations");
+}
+
+@font-face {
+  font-family: "Geist Mono";
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url("/assets/fonts/GeistMono/GeistMono.woff2") format("woff2-variations");
+}
+
+/* ─── Design tokens ───────────────────────────────────────────────────────── */
+
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 240 10% 3.9%;
+    color-scheme: light;
+
+    /* Core semantic */
+    --background: 0 0% 95%;
+    --foreground: 0 0% 15%;
     --card: 0 0% 100%;
-    --card-foreground: 240 10% 3.9%;
+    --card-foreground: 0 0% 15%;
     --popover: 0 0% 100%;
-    --popover-foreground: 240 10% 3.9%;
-    --primary: 240 5.9% 10%;
+    --popover-foreground: 0 0% 15%;
+    --primary: 0 0% 15%;
     --primary-foreground: 0 0% 98%;
-    --secondary: 240 4.8% 95.9%;
-    --secondary-foreground: 240 5.9% 10%;
-    --muted: 240 4.8% 95.9%;
-    --muted-foreground: 240 3.8% 46.1%;
-    --accent: 240 4.8% 95.9%;
-    --accent-foreground: 240 5.9% 10%;
-    --destructive: 0 84.2% 60.2%;
+    --secondary: 0 0% 96%;
+    --secondary-foreground: 0 0% 15%;
+    --muted: 0 0% 96%;
+    --muted-foreground: 240 1% 69%;
+    --accent: 208 89% 60%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 98%;
-    --border: 240 5.9% 90%;
-    --input: 240 5.9% 90%;
-    --ring: 240 5.9% 10%;
-    --radius: 0.5rem;
+    --border: 0 0% 90%;
+    --input: 0 0% 90%;
+    --ring: 0 0% 15%;
+    --radius: 1rem;
+
+    /* Brand accent — flashy green, good for NEAR verification badges */
+    --accent-secondary: 72 94% 67%;
+    --accent-secondary-foreground: 0 0% 10%;
+
+    /* Brand palette (landing + profile use) */
+    --brand-pink: 334 82% 58%;
+    --brand-pink-foreground: 0 0% 98%;
+    --brand-orange: 22 92% 55%;
+    --brand-orange-foreground: 0 0% 10%;
+    --brand-green: 156 62% 38%;
+    --brand-green-foreground: 0 0% 98%;
+    --brand-blue: 210 88% 60%;
+    --brand-blue-foreground: 0 0% 98%;
+    --brand-yellow: 45 96% 58%;
+    --brand-yellow-foreground: 0 0% 10%;
+    --brand-teal: 178 78% 45%;
+    --brand-teal-foreground: 0 0% 98%;
+
+    /* Shadows */
+    --shadow-subtle: 0 10px 30px -20px hsl(0 0% 0% / 0.1);
+    --shadow-card: 0 30px 60px -30px hsl(0 0% 0% / 0.15);
+
+    /* Links */
+    --link-color: hsl(var(--accent));
+    --link-hover-opacity: 0.75;
+    --link-underline-offset: 0.25rem;
   }
 
   .dark {
-    --background: 240 10% 3.9%;
-    --foreground: 0 0% 98%;
-    --card: 240 10% 3.9%;
-    --card-foreground: 0 0% 98%;
-    --popover: 240 10% 3.9%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 0 0% 98%;
-    --primary-foreground: 240 5.9% 10%;
-    --secondary: 240 3.7% 15.9%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 240 3.7% 15.9%;
-    --muted-foreground: 240 5% 64.9%;
-    --accent: 240 3.7% 15.9%;
+    color-scheme: dark;
+
+    --background: 0 0% 8%;
+    --foreground: 0 0% 95%;
+    --card: 0 0% 10%;
+    --card-foreground: 0 0% 95%;
+    --popover: 0 0% 10%;
+    --popover-foreground: 0 0% 95%;
+    --primary: 0 0% 95%;
+    --primary-foreground: 0 0% 10%;
+    --secondary: 0 0% 14%;
+    --secondary-foreground: 0 0% 95%;
+    --muted: 0 0% 14%;
+    --muted-foreground: 0 0% 65%;
+    --accent: 208 89% 65%;
     --accent-foreground: 0 0% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 240 3.7% 15.9%;
-    --input: 240 3.7% 15.9%;
-    --ring: 240 4.9% 83.9%;
+    --destructive: 0 63% 35%;
+    --destructive-foreground: 0 0% 92%;
+    --border: 0 0% 20%;
+    --input: 0 0% 20%;
+    --ring: 0 0% 92%;
+
+    --accent-secondary: 72 94% 70%;
+    --accent-secondary-foreground: 0 0% 10%;
+
+    --brand-pink: 334 96% 70%;
+    --brand-pink-foreground: 0 0% 10%;
+    --brand-orange: 28 98% 64%;
+    --brand-orange-foreground: 0 0% 10%;
+    --brand-green: 158 94% 54%;
+    --brand-green-foreground: 0 0% 10%;
+    --brand-blue: 210 96% 66%;
+    --brand-blue-foreground: 0 0% 10%;
+    --brand-yellow: 45 96% 65%;
+    --brand-yellow-foreground: 0 0% 10%;
+    --brand-teal: 178 94% 58%;
+    --brand-teal-foreground: 0 0% 10%;
+
+    --shadow-subtle: 0 15px 40px -20px hsl(0 0% 0% / 0.35);
+    --shadow-card: 0 25px 55px -25px hsl(0 0% 0% / 0.45);
+
+    --link-color: hsl(var(--accent));
+    --link-hover-opacity: 0.85;
+    --link-underline-offset: 0.25rem;
   }
 }
+
+/* ─── Base styles ─────────────────────────────────────────────────────────── */
 
 @layer base {
   * {
     @apply border-border;
   }
+
   body {
-    @apply bg-background text-foreground;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-      "Noto Sans", Ubuntu, "Droid Sans", "Helvetica Neue", sans-serif;
+    @apply bg-background text-foreground antialiased;
+    font-family: "Geist", system-ui, sans-serif;
+  }
+
+  /* Mona Sans opentype features — applied to all headings */
+  h1, h2, h3, h4, h5, h6 {
+    font-family: "Mona Sans", system-ui, sans-serif;
+    font-feature-settings: "ss01" on, "salt" on;
+  }
+}
+
+/* ─── Typography utilities ────────────────────────────────────────────────── */
+
+@layer base {
+  /* Mirroring dontdoit-again's semantic typography classes */
+  .text-hero {
+    @apply text-hero-xl font-headline font-bold text-foreground;
+    font-feature-settings: "ss01" on, "salt" on;
+  }
+
+  .text-display {
+    @apply text-display-lg font-headline font-bold text-foreground;
+    font-feature-settings: "ss01" on, "salt" on;
+  }
+
+  .text-title {
+    @apply text-title-lg font-headline font-semibold text-foreground;
+    font-feature-settings: "ss01" on, "salt" on;
+  }
+
+  .text-section-title {
+    @apply text-title-md font-headline font-bold text-foreground;
+    font-feature-settings: "ss01" on, "salt" on;
+  }
+
+  .text-subtitle {
+    @apply text-title-sm font-sans font-medium text-muted-foreground;
+  }
+
+  .text-body-large {
+    @apply text-body-lg font-sans text-foreground;
+  }
+
+  .text-body {
+    @apply text-body-base font-sans text-foreground;
+  }
+
+  .text-body-small {
+    @apply text-body-sm font-sans text-muted-foreground;
+  }
+
+  .text-caption {
+    @apply text-caption-sm font-sans font-medium text-muted-foreground uppercase tracking-wider;
+  }
+
+  /* Link */
+  .text-link {
+    @apply text-body-base font-sans font-semibold;
+    color: var(--link-color);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: var(--link-underline-offset);
+    transition: opacity 150ms ease, text-decoration 150ms ease;
+    opacity: 1;
+  }
+
+  .text-link:hover {
+    text-decoration: none;
+    opacity: var(--link-hover-opacity);
+  }
+
+  .text-link:focus-visible {
+    text-decoration: underline;
+    opacity: 1;
+    outline: none;
+  }
+}
+
+/* ─── Shadow utilities ────────────────────────────────────────────────────── */
+
+@layer utilities {
+  .shadow-subtle {
+    box-shadow: var(--shadow-subtle);
+  }
+
+  .shadow-card {
+    box-shadow: var(--shadow-card);
   }
 }

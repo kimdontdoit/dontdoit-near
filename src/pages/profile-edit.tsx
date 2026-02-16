@@ -3,10 +3,13 @@ import { useNearWallet } from "near-connect-hooks";
 import { useProfile } from "@/hooks/useProfile";
 import { toast } from "sonner";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Upload } from "lucide-react";
+import { uploadImage, validateImageFile } from "@/lib/upload";
 import ProfileGrid from "@/features/profiles/components/ProfileGrid";
 import { BlockEditPanel } from "@/features/profiles/components/BlockEditPanel";
 import { ProfileFloatingNav } from "@/features/profiles/components/ProfileFloatingNav";
@@ -30,7 +33,29 @@ const ProfileEdit = () => {
   const [editingBlockId, setEditingBlockId] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [isNewBlock, setIsNewBlock] = useState(false);
+  const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
   const blockIdCounter = useRef(0);
+  const avatarFileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleAvatarFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !signedAccountId) return;
+
+    const err = validateImageFile(file);
+    if (err) { toast.error(err); return; }
+
+    setIsUploadingAvatar(true);
+    try {
+      const url = await uploadImage(file, signedAccountId, "avatar");
+      setAvatarUrl(url);
+      toast.success("Avatar uploaded");
+    } catch (uploadErr: any) {
+      toast.error(uploadErr.message || "Avatar upload failed");
+    } finally {
+      setIsUploadingAvatar(false);
+      e.target.value = "";
+    }
+  };
 
   const currentContent = stagedContent || profileContent;
   const currentDisplayName = displayName ?? profile?.display_name ?? "";
@@ -195,12 +220,30 @@ const ProfileEdit = () => {
         <div className="max-w-4xl mx-auto px-4 py-8">
           {/* Profile Header (editable) */}
           <div className="flex items-start gap-4 mb-8">
-            <Avatar className="w-16 h-16">
-              {currentAvatarUrl && (
-                <AvatarImage src={currentAvatarUrl} alt={currentDisplayName} />
-              )}
-              <AvatarFallback className="text-lg">{initials}</AvatarFallback>
-            </Avatar>
+            <div className="relative group">
+              <Avatar className="w-16 h-16">
+                {currentAvatarUrl && (
+                  <AvatarImage src={currentAvatarUrl} alt={currentDisplayName} />
+                )}
+                <AvatarFallback className="text-lg">{initials}</AvatarFallback>
+              </Avatar>
+              <button
+                type="button"
+                disabled={isUploadingAvatar}
+                onClick={() => avatarFileInputRef.current?.click()}
+                className="absolute inset-0 flex items-center justify-center rounded-full bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+                title="Upload avatar"
+              >
+                <Upload className="w-5 h-5 text-white" />
+              </button>
+              <input
+                ref={avatarFileInputRef}
+                type="file"
+                accept="image/jpeg,image/png,image/webp,image/gif"
+                className="hidden"
+                onChange={handleAvatarFileChange}
+              />
+            </div>
             <div className="flex-1 space-y-3">
               <div>
                 <Label htmlFor="displayName" className="text-xs text-muted-foreground">
@@ -218,13 +261,27 @@ const ProfileEdit = () => {
                 <Label htmlFor="avatarUrl" className="text-xs text-muted-foreground">
                   Avatar URL
                 </Label>
-                <Input
-                  id="avatarUrl"
-                  value={currentAvatarUrl}
-                  onChange={(e) => setAvatarUrl(e.target.value)}
-                  placeholder="https://example.com/avatar.png"
-                  className="max-w-sm"
-                />
+                <div className="flex gap-2 max-w-sm">
+                  <Input
+                    id="avatarUrl"
+                    value={currentAvatarUrl}
+                    onChange={(e) => setAvatarUrl(e.target.value)}
+                    placeholder="https://example.com/avatar.png"
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="icon"
+                    disabled={isUploadingAvatar || !signedAccountId}
+                    onClick={() => avatarFileInputRef.current?.click()}
+                    title="Upload avatar"
+                  >
+                    <Upload className="w-4 h-4" />
+                  </Button>
+                </div>
+                {isUploadingAvatar && (
+                  <p className="text-xs text-muted-foreground mt-1">Uploading...</p>
+                )}
               </div>
               <div>
                 <Label htmlFor="bio" className="text-xs text-muted-foreground">
@@ -278,6 +335,7 @@ const ProfileEdit = () => {
         activeBlock={!!editingBlock}
         onSave={handleSave}
         onAddBlock={handleAddBlock}
+        viewUrl={signedAccountId ? `https://dontdoit.club/iki/${signedAccountId}` : undefined}
       />
     </div>
   );

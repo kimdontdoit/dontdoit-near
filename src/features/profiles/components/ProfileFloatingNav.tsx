@@ -2,7 +2,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { DEFAULT_THEME } from "@/features/profiles/theme";
 import { Button } from "@/components/ui/button";
 import { AddBlockPopover } from "./AddBlockPopover";
-import { Plus, Check, Loader2, Pencil } from "lucide-react";
+import { Plus, Check, Loader2, Pencil, ExternalLink } from "lucide-react";
 import { cn } from "@/lib/cn";
 
 interface ProfileFloatingNavProps {
@@ -11,6 +11,8 @@ interface ProfileFloatingNavProps {
   isDirty?: boolean;
   canEdit?: boolean;
   activeBlock?: boolean;
+  /** External URL to view the published profile (e.g. https://dontdoit.club/iki/<id>) */
+  viewUrl?: string;
   onEdit?: () => void;
   editUrl?: string;
   onCancel?: () => void;
@@ -29,6 +31,7 @@ export function ProfileFloatingNav({
   isDirty = false,
   canEdit = false,
   activeBlock = false,
+  viewUrl,
   onEdit,
   editUrl,
   onCancel,
@@ -106,6 +109,23 @@ export function ProfileFloatingNav({
                   )}
                   Publish
                 </Button>
+
+                {viewUrl && (
+                  <>
+                    <div className="w-px h-6 bg-border/50 mx-1" />
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="rounded-full px-4 h-10 gap-2 hover:bg-muted/50"
+                      asChild
+                    >
+                      <a href={viewUrl} target="_blank" rel="noopener noreferrer">
+                        <ExternalLink className="w-4 h-4" />
+                        View
+                      </a>
+                    </Button>
+                  </>
+                )}
               </>
             ) : (
               <>
